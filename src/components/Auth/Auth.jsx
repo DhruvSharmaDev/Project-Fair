@@ -23,8 +23,7 @@ const Auth = (props) => {
         setError('All Fields Are required')
         return
     }
-   
-       setSubmitButtonDisable(true)
+      setSubmitButtonDisable(true)
       signInWithEmailAndPassword(auth, values.email,values.password)
       .then(()=>{
           setSubmitButtonDisable(false);
@@ -34,19 +33,15 @@ const Auth = (props) => {
         setSubmitButtonDisable(false)
         setError(err.message)
       })
-
     }
     const handleSignUp=()=>{
         if(!values.name || !values.email || !values.password){
             setError('All Fields Are required')
             return
         }
-       
-           setSubmitButtonDisable(true)
-
+          setSubmitButtonDisable(true)
           createUserWithEmailAndPassword(auth, values.email,values.password)
           .then((res)=>{
-            
                const user_id=res.user.uid;
               updateUserDatabase({ name:values.name, email :values.email, password:values.password},user_id)
               setSubmitButtonDisable(false);
@@ -57,10 +52,7 @@ const Auth = (props) => {
             console.log(err.message);
             setError(err.message)
 
-          })
-         
-        
-        
+          })   
     }
   return (
     <div className={styles.container}>
@@ -110,5 +102,4 @@ const Auth = (props) => {
     </div>
   )
 }
-
 export default Auth
