@@ -7,6 +7,7 @@ import Auth from "./components/Auth/Auth";
 import Spiner from "./components/Spinner/Spiner";
 import { useEffect, useState } from "react";
 import {auth, getUserFromDatabase} from "./Firebase"
+import Account from "./components/Account/Account";
 
 function App() {
   const [isAuthenticated ,setIsAuthenticated]=useState(false);
@@ -16,14 +17,13 @@ function App() {
       const  userDetails= await getUserFromDatabase(uid);
       setIsAuthenticated(true);
       setIsDataLoaded(true);
-       setUserDetails(userDetails);
-       
-       console.log(userDetails);
+      setUserDetails(userDetails);
   }
   useEffect(()=>{
    const listener=auth.onAuthStateChanged((user)=>{
     if(!user){
     setIsDataLoaded(true)
+    setIsAuthenticated(false)
     return ;}
        setIsAuthenticated(true);
        setIsDataLoaded(true)
@@ -58,7 +58,7 @@ function App() {
             )}
             :
             <>
-            <Route path="/account" element={<h1>Account </h1>}></Route>
+            <Route path="/account" element={<Account userDetails={userDetails} isAuthenticated={isAuthenticated}/>}></Route>
             <Route path="/contact" element={<h1>Contact </h1>}></Route>
             <Route path="/" element={<Home auth={isAuthenticated}/>}></Route>
             <Route path="/*" element={<Navigate to="/account"/>}/>
