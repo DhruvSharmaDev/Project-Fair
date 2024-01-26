@@ -7,23 +7,20 @@ import { signOut } from "firebase/auth";
 import { auth, updateUserDatabase, uploadImage } from "../../Firebase";
 const Account = ({ userDetails, isAuthenticated }) => {
   const [progress, setProgress] = useState(0);
-  const [profileImageUrl, setProfileImageUrl] = useState(
-    "https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=600"
-  );
   const[userProfileValues,setUserProfileValues]=useState({
     name:userDetails.name,
     designation:userDetails.designation|| "",
     github:userDetails.github || "",
     linkedin:userDetails.linkedin || "",
+    profileImage:userDetails.profileImage || "https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=600",
   })
   const[showSaveDetailsButton,setShowSaveDetailsButton]=useState(false);
   const[errorMessage,setErrorMessage]=useState("")
   const[profileImageUploadedStarted,setProfileImageUploadedStarted]=useState(false);
-  const[saveButtonDisable,setSaveButtonDisable]=useState(true);
- 
+  const[saveButtonDisable,setSaveButtonDisable]=useState(false);
   const imagepicker = useRef();
-  const handleLogOut = () => {
-    signOut(auth);
+  const handleLogOut = async() => {
+     await signOut(auth);
   };
   const handleCameraClick = () => {
     imagepicker.current.click();
@@ -38,27 +35,24 @@ const Account = ({ userDetails, isAuthenticated }) => {
         setProgress(progress);
       },
       (url) => {
+        userProfileValues.profileImage=url;
         updateImageUrlToDatabase(url);
-        setProfileImageUrl(url);
+
 
         setProfileImageUploadedStarted(false)
+        setProgress(0);
 
       },
       (error) => {
-   
         setProfileImageUploadedStarted(false)
-        
+      
       }
     );
   };
    const updateImageUrlToDatabase= async(url)=>{
-     await updateUserDatabase({...userProfileValues,ProfileImage:url},userDetails.uid)
-     
-     
-
+    await updateUserDatabase({...userProfileValues,ProfileImage:url},userDetails.uid);
    }
    const handleInputChange=(event,property)=>{
-
     setShowSaveDetailsButton(true)
     setUserProfileValues((prev)=>
     ({...prev,
@@ -67,12 +61,13 @@ const Account = ({ userDetails, isAuthenticated }) => {
    const saveDetailsToDatabase= async()=>{
     if(!userProfileValues.name){
       setErrorMessage("Name is Required")
+      return;
     }
      setSaveButtonDisable(true);
-     await updateUserDatabase({...userProfileValues},userDetails.uid)
-     setSaveButtonDisable(false)
-     setShowSaveDetailsButton(false)
-
+     
+     await updateUserDatabase({...userProfileValues},userDetails.uid);
+     setSaveButtonDisable(false);
+     setShowSaveDetailsButton(false);
    }
 
   return isAuthenticated ? (
@@ -97,8 +92,8 @@ const Account = ({ userDetails, isAuthenticated }) => {
         <div className={styles.profile}>
           <div className={styles.left}>
             <div className={styles.image}>
-              <img src={profileImageUrl} alt="Profile Image" />
-              <div className={styles.camera} onClick={handleCameraClick}>
+              <img src={userProfileValues.profileImage} alt="Profile Image" />
+              <div className={styles.camera} onClick={handleCameraClick} onChange={(event)=>{handleInputChange(event,"profileImage")}}>
                 <Camera />
               </div>
             </div>
@@ -145,7 +140,7 @@ const Account = ({ userDetails, isAuthenticated }) => {
         </div>
         {
           showSaveDetailsButton &&
-          <div className={styles.saveButton} onClick={saveDetailsToDatabase}>Save Details</div>
+          <div className={styles.saveButton} onClick={saveDetailsToDatabase} disabled={saveButtonDisable}>Save Details</div>
         }
         
       </div>
