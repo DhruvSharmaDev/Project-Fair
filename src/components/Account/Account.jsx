@@ -44,12 +44,12 @@ const Account = ({ userDetails, isAuthenticated }) => {
       (url) => {
         userProfileValues.profileImage = url;
         updateImageUrlToDatabase(url);
-
         setProfileImageUploadedStarted(false);
         setProgress(0);
       },
       (error) => {
         setProfileImageUploadedStarted(false);
+        setErrorMessage(error);
       }
     );
   };

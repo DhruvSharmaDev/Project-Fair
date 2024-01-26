@@ -23,8 +23,7 @@ const app = initializeApp(firebaseConfig);
 // using for user details for authentication 
 const db=getFirestore(app)
 // using for profile image
-const storage=getStorage(app);
-
+const storage=getStorage(app)
 
 const updateUserDatabase= async (user,uid)=>{
     if(typeof(user)!=="object"){
@@ -59,16 +58,20 @@ if(fileSize>2){
   errorCallback("file must be smaller thena 2MB");
   return;
 }
+
 const storageRef=ref(storage,`images/${file.name}`);
 const task=uploadBytesResumable(storageRef,file);
-task.on('state_changed',(snapshot)=>{
+task.on('state_changed',
+(snapshot)=>{
 const progress=snapshot.bytesTransferred/(snapshot.totalBytes)*100;
 progressCallBack(progress);
-},(error)=>{
+},
+(error)=>{
   errorCallback(error.message)
   return;
 
-},()=>{
+},
+()=>{
   getDownloadURL(storageRef).then((url)=>{urlCallBack(url)}
   );
 

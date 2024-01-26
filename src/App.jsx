@@ -2,7 +2,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  redirect,
   Navigate,
 } from "react-router-dom";
 
@@ -25,6 +24,8 @@ function App() {
     setIsDataLoaded(true);
     setUserDetails(userDetails);
   };
+
+  // helps in state management of the login and signout  from firebase 
   useEffect(() => {
     const listener = auth.onAuthStateChanged((user) => {
       if (!user) {
